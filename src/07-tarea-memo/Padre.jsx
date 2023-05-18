@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Hijo } from './Hijo';
 
 export const Padre = () => {
@@ -6,9 +6,18 @@ export const Padre = () => {
     const numeros = [2,4,6,8,10];
     const [valor, setValor] = useState(0);
 
+    const incrementar = useCallback(
+        (num) => {
+            setValor( (oldValue) => oldValue + num );
+        },
+        [],
+    );
+    
+    /*
     const incrementar = ( num ) => {
         setValor( valor + num )
     }
+    */
 
 
     return (
