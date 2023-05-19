@@ -1,8 +1,11 @@
-import { useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import { todoReducer } from './todoReducer';
+import { TodoList } from './TodoList';
+import { TodoAdd } from './TodoAdd';
 
 
 const initialState = [
+    /*
     {
         id: new Date().getTime(),
         description: 'Recolectar la piedra del alma',
@@ -10,14 +13,42 @@ const initialState = [
     },
     {
         id: new Date().getTime() * 3,
-        description: 'Recolectar la piedra del alma',
+        description: 'Recolectar la piedra del tiempo',
         done: false
     }
+    */
 ];
+
+const init = () => {
+    return JSON.parse( localStorage.getItem('todos') ) || [];
+}
 
 export const TodoApp = () => {
 
-    const [ todos, dispatch ] = useReducer(todoReducer, initialState);
+    const [ todos, dispatch ] = useReducer(todoReducer, initialState, init);
+
+    useEffect(() => {
+        localStorage.setItem('todos', JSON.stringify(todos));
+    }, [todos]);
+    
+
+    const handleNewTodo = (todo) => {
+        console.log({ todo });
+        const action = {
+            type: '[TODO] Add Todo',
+            payload: todo
+        }
+
+        dispatch(action);
+        // dispatch({ type: '[TODO] Add Todo', todo });
+    }
+
+    const handleDeleteTodo = (id) => {
+        dispatch({ 
+            type: '[TODO] Remove Todo', 
+            payload: id 
+        });
+    }
 
     return (
         <>
@@ -26,33 +57,18 @@ export const TodoApp = () => {
 
             <div className='row'>
                 <div className='col-7'>
-                    <ul className='list-group'>
-                        {
-                            todos.map( todo => (
-                                <li key={todo.id} className='list-group-item d-flex justify-content-between'>
-                                    <span className='align-self-center'> Item 1 </span>
-                                    <button className='btn btn-danger'>Borrar</button>
-                                </li>
-                            ))
-                        }
-                    </ul>
+
+                    <TodoList todos={ todos } onDeleteTodo={ handleDeleteTodo } />
+
                 </div>
             </div>
 
             <div className='col-5'>
                 <h4>Agregar TODO</h4>
                 <hr />
-                <form action=''>
-                    <input 
-                        type='text'
-                        placeholder='¿Qué hay que hacer?'
-                        className='form-control'
-                    />
+                
+                <TodoAdd onNewTodo={handleNewTodo} />
 
-                    <button type='submit' className='btn btn-primary mt-1'>
-                        Agregar
-                    </button>
-                </form>
             </div>
 
         </>
